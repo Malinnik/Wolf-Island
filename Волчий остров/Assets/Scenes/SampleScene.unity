@@ -235,8 +235,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   groundTile: {fileID: 11400000, guid: e703bca0a4fd431439ae8a8f2b14abbc, type: 2}
-  rabbit: {fileID: 11400000, guid: 2001fea3cf757d5448978341174c7f01, type: 2}
+  rabbitTile: {fileID: 11400000, guid: 2001fea3cf757d5448978341174c7f01, type: 2}
+  wolfTile: {fileID: 11400000, guid: 778d88207db56a34c9a86e934cfcc849, type: 2}
   tilemap: {fileID: 1259903220}
+  timeScale: 0.0001
+  chanceOfDuplication: 0
 --- !u!156049354 &807233253
 Grid:
   m_ObjectHideFlags: 0
