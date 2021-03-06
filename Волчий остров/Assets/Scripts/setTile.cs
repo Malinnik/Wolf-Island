@@ -5,7 +5,7 @@ using UnityEngine.Tilemaps;
 
 public class setTile : MonoBehaviour
 {
-    const int num = 400;  //Константная переменная хранящяя значение максимума существ
+    const int num = 100;        //Константная переменная хранящяя значение максимума существ
     public Tile groundTile;         //Тайл острова 
     public Tile rabbitTile;             //Тайл Кролика
     public Tile wolfTile;               //Тайл волка
@@ -20,10 +20,7 @@ public class setTile : MonoBehaviour
     int numOfRabbits = 0;           //Кол-во кроликов (0;num)
     Vector3Int cellPos;             //Позиция текущей клетки (курсора установки или удаления тайлов)
     [SerializeField] float timeScale;
-    [SerializeField] int chanceOfDuplication = 20;   //Шанс размножения кроликов (0-100%)
-     
-
-
+    [SerializeField] float chanceOfDuplication = 20;   //Шанс размножения кроликов (0-100%)
 
     void Start()
     {   
@@ -47,7 +44,7 @@ public class setTile : MonoBehaviour
         int move,plot;  //Рандомные переменные, определяют движение и возможность размножения кролика
 
 
-        for (int i = 0; i <= numOfRabbits; i++) //Цикл передвижения всех кроликов 
+        for (int i = 0; i < num; i++) //Цикл передвижения всех кроликов 
         {
             if (isRabbitAlive[i] == false) { }
             else
@@ -97,22 +94,14 @@ public class setTile : MonoBehaviour
                 }
 
                 //ограничения передвижения кролика (квадрат 20 на 20)
-                if (rabbitX[i] == 0)  rabbitX[i] = 1;  //Если вышел за левую грань   
-                {
-                    
-                }
-                if (rabbitX[i] == 21) rabbitX[i] = 20;  //Если вышел за правую грань
-                {
-                    
-                }
-                if (rabbitY[i] == 0)  rabbitY[i] = 1;  //Если вышел за нижнюю грань
-                {
-                    
-                }
-                if (rabbitY[i] == 21) rabbitY[i] = 20;  //Если вышел за верхнюю грань
-                {
-                    
-                }
+                if (rabbitX[i] < 1)  rabbitX[i] = 1;  //Если вышел за левую грань   
+    
+                if (rabbitX[i] > 20) rabbitX[i] = 20;  //Если вышел за правую грань
+      
+                if (rabbitY[i] < 1)  rabbitY[i] = 1;  //Если вышел за нижнюю грань
+    
+                if (rabbitY[i] > 20) rabbitY[i] = 20;  //Если вышел за верхнюю грань
+  
                 //                      Y ^
                 //Система координат XY    | - >
                 //                            X
@@ -131,7 +120,6 @@ public class setTile : MonoBehaviour
                 plot = Random.Range(1, 100);  //Шанс размножения кролика = chaceOfDuplication%
                 if (plot <= chanceOfDuplication)
                 {
-
                     for (int j = 0; j <= numOfRabbits; j++)
                     {
                         if (isRabbitAlive[j] == false)
@@ -142,14 +130,14 @@ public class setTile : MonoBehaviour
                             cellPos.x = rabbitX[j];
                             cellPos.y = rabbitX[j];
                             tilemap.SetTile(cellPos, rabbitTile);
-                            break;
+                            if (isRabbitAlive[j]) break;
                         }
-                        else if (numOfRabbits == num)
+                        else 
                         {
-                            numOfRabbits -= 1; //Установка лимита кроликов (кол-во кроликов не будет превышать 399)
-                        
-                        } else 
-                        { 
+                            if (numOfRabbits == num)
+                            {
+                                numOfRabbits -= 1; //Установка лимита кроликов (кол-во кроликов не будет превышать 399)
+                            }
                             numOfRabbits += 1;  //Увеличение количества кроликов на 1
                             rabbitX[numOfRabbits-1] = rabbitX[i];  //Координаты нового кролика = координатам родителя
                             rabbitY[numOfRabbits-1] = rabbitY[i];
@@ -157,7 +145,7 @@ public class setTile : MonoBehaviour
                             cellPos.y = rabbitY[numOfRabbits-1];
                             isRabbitAlive[numOfRabbits-1] = true;
                             tilemap.SetTile(cellPos, rabbitTile);
-                            break;
+                            if (isRabbitAlive[numOfRabbits-1]) break;
                         }
                     }
                 }  
@@ -169,11 +157,27 @@ public class setTile : MonoBehaviour
     void killRabits()
     {
          numOfRabbits = 0;
-         for(int i = 1; i <= num; i++)
+         for(int i = 1; i < num; i++)
          {
+
+            cellPos.x = rabbitX[i];
+            cellPos.y = rabbitY[i];
+            tilemap.SetTile(cellPos, groundTile);
             rabbitX[i] = -1;
             rabbitY[i] = -1;
-         }
+            isRabbitAlive[i] = false;
+
+
+            cellPos.x = rabbitX[0];
+            cellPos.y = rabbitY[0];
+            tilemap.SetTile(cellPos, groundTile);
+            rabbitX[0] = 10;
+            rabbitY[0] = 10;
+            cellPos.x = rabbitX[i];
+            cellPos.y = rabbitY[i];
+            tilemap.SetTile(cellPos, rabbitTile);
+            isRabbitAlive[0] = true;
+        }
     }
 
     // Генерация карты
@@ -218,7 +222,7 @@ public class setTile : MonoBehaviour
 
             move = Random.Range(1, 10);  //путь движения волка
 
-            for (int j = 0; j <= numOfRabbits; j++)
+            for (int j = 0; j < numOfRabbits; j++)
             {
                 if ((rabbitX[j] == wolfX[i] - 1) && (rabbitY[j] == wolfY[i] + 1)) isRabbitHere[0] = true;
                 if ((rabbitX[j] == wolfX[i])     && (rabbitY[j] == wolfY[i] + 1)) isRabbitHere[1] = true;
@@ -233,16 +237,16 @@ public class setTile : MonoBehaviour
                 if ((rabbitX[j] == wolfX[i] + 1) && (rabbitY[j] == wolfY[i] - 1)) isRabbitHere[8] = true;
             }
 
-            if (isRabbitHere[5])
+            if (isRabbitHere[4])
             {
                 move = 5;
-                for (int j = 0; j <= numOfRabbits; j++)
+                for (int j = 0; j < numOfRabbits; j++)
                 {
                     if ((rabbitX[j] == wolfX[i]) && (rabbitY[j] == wolfY[i]))
                     {
                         cellPos.x = rabbitX[j];
                         cellPos.y = rabbitY[j];
-                        tilemap.SetTile(cellPos, groundTile);
+                        tilemap.SetTile(cellPos, wolfTile);
                         rabbitX[j] = -1;
                         rabbitY[j] = -1;
                         isRabbitAlive[j] = false;
@@ -253,14 +257,14 @@ public class setTile : MonoBehaviour
 
 
 
-            else if (isRabbitHere[1]) move = 1;
-            else if (isRabbitHere[2]) move = 2;
+            else if (isRabbitHere[0]) move = 1;
+            else if (isRabbitHere[1]) move = 2;
             else if (isRabbitHere[2]) move = 3;
-            else if (isRabbitHere[2]) move = 4;
-            else if (isRabbitHere[2]) move = 6;
-            else if (isRabbitHere[2]) move = 7;
-            else if (isRabbitHere[2]) move = 8;
-            else if (isRabbitHere[2]) move = 9;
+            else if (isRabbitHere[3]) move = 4;
+            else if (isRabbitHere[5]) move = 6;
+            else if (isRabbitHere[6]) move = 7;
+            else if (isRabbitHere[7]) move = 8;
+            else if (isRabbitHere[8]) move = 9;
 
 
             switch (move)
@@ -304,37 +308,36 @@ public class setTile : MonoBehaviour
                 }
 
             //ограничения передвижения волка (квадрат 20 на 20)
-            if (wolfX[i] == 0)  wolfX[i] = 1;   //Если вышел за левую грань   
+            if (wolfX[i] < 1)  wolfX[i] = 1;   //Если вышел за левую грань   
 
-            if (wolfX[i] == 21) wolfX[i] = 20;  //Если вышел за правую грань
+            if (wolfX[i] > 20) wolfX[i] = 20;  //Если вышел за правую грань
  
-            if (wolfY[i] == 0)  wolfY[i] = 1;  //Если вышел за нижнюю грань
+            if (wolfY[i] < 1)  wolfY[i] = 1;  //Если вышел за нижнюю грань
 
-            if (wolfY[i] == 21) wolfY[i] = 20; //Если вышел за верхнюю грань
+            if (wolfY[i] > 20) wolfY[i] = 20; //Если вышел за верхнюю грань
  
 
-            for (int j = 0; j <= numOfRabbits; j++)
+            for (int j = 0; j < numOfRabbits; j++)
             {
                 if ((rabbitX[j] == wolfX[i]) && (rabbitY[j] == wolfY[i])) isRabbitHere[4] = true;
             }
 
-            if (isRabbitHere[5])
+            if (isRabbitHere[4])
             {
-                for (int j = 0; j <= numOfRabbits; j++)
+                for (int j = 0; j < numOfRabbits; j++)
                 {
                     if ((rabbitX[j] == wolfX[i]) && (rabbitY[j] == wolfY[i]))
                     {
                         cellPos.x = rabbitX[j];
                         cellPos.y = rabbitY[j];
-                        tilemap.SetTile(cellPos, groundTile);
+                        tilemap.SetTile(cellPos, wolfTile);
                         rabbitX[j] = -1;
                         rabbitY[j] = -1;
                         isRabbitAlive[j] = false;
                     }
                 }
 
-            }
-
+            } 
             //                      Y ^
             //Система координат XY    | - >
             //                            X
@@ -351,8 +354,9 @@ public class setTile : MonoBehaviour
 
     void FixedUpdate()
     {
-        wolfMove();
+        
         rabbitMove();   //Передвижение всех кроликов
+        wolfMove();
         Time.fixedDeltaTime = Time.fixedDeltaTime * Time.timeScale; //Задержка перед следующим действием 
 
         Debug.Log(numOfRabbits+1);
