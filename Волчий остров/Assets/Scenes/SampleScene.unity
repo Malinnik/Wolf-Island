@@ -238,7 +238,7 @@ MonoBehaviour:
   rabbitTile: {fileID: 11400000, guid: 2001fea3cf757d5448978341174c7f01, type: 2}
   wolfTile: {fileID: 11400000, guid: 778d88207db56a34c9a86e934cfcc849, type: 2}
   tilemap: {fileID: 1259903220}
-  timeScale: 0.0001
+  timeScale: 0.001
   chanceOfDuplication: 0
 --- !u!156049354 &807233253
 Grid:
